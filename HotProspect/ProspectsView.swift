@@ -22,11 +22,21 @@ struct ProspectsView: View {
         NavigationView {
             List {
                 ForEach(filtereProspects) { prospect in
-                    VStack(alignment:.leading){
-                        Text(prospect.name)
-                            .font(.headline)
-                        Text(prospect.emailAddress)
-                            .foregroundColor(.secondary)
+                    HStack{
+                        VStack(alignment:.leading){
+                            Text(prospect.name)
+                                .font(.headline)
+                            Text(prospect.emailAddress)
+                                .foregroundColor(.secondary)
+                        }
+                        if filter == .none {
+                            Spacer()
+                            if prospect.isContacted {
+                                Label("", systemImage: "person.fill.checkmark")
+                            } else {
+                                Label("", systemImage: "person.fill.xmark")
+                            }
+                        }
                     }
                     .swipeActions {
                         if prospect.isContacted {

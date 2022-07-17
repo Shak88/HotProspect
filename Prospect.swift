@@ -15,22 +15,37 @@ class Prospect: Identifiable, Codable {
 }
 
 @MainActor class Prospects: ObservableObject {
+    
     @Published private(set) var people: [Prospect]
+    
+    private static var url: URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let url = paths[0].appendingPathComponent("people.json")
+        return url
+    }
+    
     let saveKey = "SavedData"
     init() {
-        if let data = UserDefaults.standard.data(forKey: saveKey) {
-            if let decoded = try? JSONDecoder().decode([Prospect].self, from: data) {
+        
+        if let data = try? Data(contentsOf: Self.url) {
+            if let decoded = try? JSONDecoder().decode([Prospect].self, from: data){
                 people = decoded
                 return
             }
         }
         
         people = []
+        
+    }
+    
+    private func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
     }
     
     private func save() {
         if let encoded = try? JSONEncoder().encode(people) {
-            UserDefaults.standard.set(encoded, forKey: saveKey)
+            try? encoded.write(to: Self.url)
         }
     }
     
@@ -44,5 +59,5 @@ class Prospect: Identifiable, Codable {
         people.append(prospect)
         save()
     }
-     
+    
 }
